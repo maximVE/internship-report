@@ -1474,25 +1474,24 @@
 
   const client = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-  async function login() {
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
-    const error = document.getElementById("error");
+async function login() {
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
 
-    const { data, error: err } = await client.auth.signInWithPassword({
-      email: "internship@gmail.com",
-      password: "BNDm3Cmry.@hw@7"
-});
-    });
+  const { data, error } = await client.auth.signUp({
+    email,
+    password
+  });
 
-    if (err) {
-      error.classList.remove("hidden");
-      console.log(err.message);
-      return;
-    }
+  console.log(data, error);
 
-    document.getElementById("auth").style.display = "none";
+  if (error) {
+    console.log("Signup failed:", error.message);
+    return;
   }
+
+  document.getElementById("auth").style.display = "none";
+}
 
     </script>
   </body>
