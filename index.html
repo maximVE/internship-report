@@ -13,6 +13,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Three.js for stunning background canvas -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
     <script>
       tailwind.config = {
         theme: {
@@ -102,37 +104,23 @@
   <body
     class="bg-white text-slateDark font-sans relative selection:bg-cobalt selection:text-white overflow-x-hidden min-h-screen micro-grid"
   >
+<div id="auth" class="fixed inset-0 bg-white z-[9999] flex items-center justify-center">
+  <div class="space-y-4 text-center w-72">
 
-    <!-- SIMPLE PASSWORD GATE -->
-<div id="lockscreen" class="fixed inset-0 bg-white z-[9999] flex items-center justify-center">
-  <div class="text-center space-y-6">
-    
-    <h1 class="text-2xl font-bold tracking-tight text-slate-900">
-      Enter Password
-    </h1>
+    <h1 class="text-xl font-bold">Login</h1>
 
-    <input
-      id="passwordInput"
-      type="password"
-      placeholder="Password"
-      class="border border-slate-300 px-4 py-2 text-center focus:outline-none focus:border-cobalt"
-    />
+    <input id="email" placeholder="Email" class="border w-full p-2" />
+    <input id="password" type="password" placeholder="Password" class="border w-full p-2" />
 
-    <br />
-
-    <button
-      onclick="checkPassword()"
-      class="mt-4 border border-cobalt text-cobalt px-5 py-2 text-xs uppercase tracking-widest hover:bg-cobalt hover:text-white transition"
-    >
-      Unlock
+    <button onclick="login()" class="border px-4 py-2 text-xs uppercase tracking-widest">
+      Sign in
     </button>
 
-    <p id="error" class="text-red-500 text-xs hidden">
-      Wrong password
-    </p>
+    <p id="error" class="text-red-500 text-xs hidden">Login failed</p>
 
   </div>
 </div>
+
     <!-- Interstitial Vector Lines to emulate premium Italian design studio -->
     <div
       class="fixed inset-x-0 top-0 h-[0.5px] bg-slate-200/60 z-50 pointer-events-none"
@@ -1478,18 +1466,29 @@
       );
       personalityObserver.observe(personalitySection);
       
-  const PASSWORD = "V3erM3er#9XqL!2026";
 
-  function checkPassword() {
-    const input = document.getElementById("passwordInput").value;
-    const error = document.getElementById("error");
 
-    if (input === PASSWORD) {
-      document.getElementById("lockscreen").style.display = "none";
-    } else {
-      error.classList.remove("hidden");
-    }
+  const supabaseUrl = "https://lwnnvomsbyvvksrebbvv.supabase.co/rest/v1/";
+  const supabaseKey = "lwnnvomsbyvvksrebbvv";
+  const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+      async function login() {
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+  const error = document.getElementById("error");
+
+  const { data, error: err } = await supabase.auth.signInWithPassword({
+    email,
+    password
+  });
+
+  if (err) {
+    error.classList.remove("hidden");
+    return;
   }
+
+  document.getElementById("auth").style.display = "none";
+}
+
     </script>
   </body>
 </html>
