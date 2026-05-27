@@ -1468,26 +1468,31 @@
       
 
 
-  const supabaseUrl = "https://lwnnvomsbyvvksrebbvv.supabase.co/rest/v1/";
-  const supabaseKey = "lwnnvomsbyvvksrebbvv";
-  const supabase = supabase.createClient(supabaseUrl, supabaseKey);
-      async function login() {
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
-  const error = document.getElementById("error");
 
-  const { data, error: err } = await supabase.auth.signInWithPassword({
-    email,
-    password
-  });
+  const supabaseUrl = "https://lwnnvomsbyvvksrebbvv.supabase.co";
+  const supabaseKey = "sb_publishable_Vjkho7-E5AEUYmRNceN_eg_dnH_1m0n";
 
-  if (err) {
-    error.classList.remove("hidden");
-    return;
+  const client = supabase.createClient(supabaseUrl, supabaseKey);
+
+  async function login() {
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    const error = document.getElementById("error");
+
+    const { data, error: err } = await client.auth.signInWithPassword({
+      email,
+      password
+    });
+
+    if (err) {
+      error.classList.remove("hidden");
+      console.log(err.message);
+      return;
+    }
+
+    document.getElementById("auth").style.display = "none";
   }
-
-  document.getElementById("auth").style.display = "none";
-}
+</script>
 
     </script>
   </body>
