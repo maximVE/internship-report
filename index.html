@@ -1472,7 +1472,7 @@
   const supabaseUrl = "https://lwnnvomsbyvvksrebbvv.supabase.co";
   const supabaseKey = "sb_publishable_Vjkho7-E5AEUYmRNceN_eg_dnH_1m0n";
 
-  const client = supabase.createClient(supabaseUrl, supabaseKey);
+  const client = window.supabase.createClient(supabaseUrl, supabaseKey);
 
   async function login() {
     const email = document.getElementById("email").value;
