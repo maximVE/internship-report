@@ -1,0 +1,1451 @@
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Maxim Veermeer — Internship Report</title>
+    <!-- Typography: Space Grotesk for sleek minimalist tech feel -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Three.js for stunning background canvas -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ["Space Grotesk", "sans-serif"],
+            },
+            colors: {
+              cobalt: "#0022ff", // Exactly ONE highly saturated vivid blue accent color
+              slateDark: "#0f172a",
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      /* Custom ultra-minimal micro-grid pattern in the spirit of indigo-laboratory.it */
+      .micro-grid {
+        background-size: 40px 40px;
+        background-image:
+          linear-gradient(
+            to right,
+            rgba(0, 34, 255, 0.02) 1px,
+            transparent 1px
+          ),
+          linear-gradient(
+            to bottom,
+            rgba(0, 34, 255, 0.02) 1px,
+            transparent 1px
+          );
+      }
+
+      /* Scroll reveals */
+      .reveal-element {
+        opacity: 0;
+        transform: translateY(24px);
+        transition:
+          opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+          transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .reveal-element.active {
+        opacity: 1;
+        transform: none;
+      }
+
+      /* Custom scrollbar */
+      ::-webkit-scrollbar {
+        width: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #ffffff;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #0022ff;
+      }
+      .hero-animate {
+        opacity: 0;
+        transform: translateY(20px);
+        animation: heroIn 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      }
+
+      @keyframes heroIn {
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes slowFloat {
+        0% {
+          transform: translateY(0px);
+        }
+        50% {
+          transform: translateY(-6px);
+        }
+        100% {
+          transform: translateY(0px);
+        }
+      }
+
+      .hero-float {
+        display: inline-block;
+        animation: slowFloat 6s ease-in-out infinite;
+      }
+    </style>
+  </head>
+  <body
+    class="bg-white text-slateDark font-sans relative selection:bg-cobalt selection:text-white overflow-x-hidden min-h-screen micro-grid"
+  >
+    <!-- Interstitial Vector Lines to emulate premium Italian design studio -->
+    <div
+      class="fixed inset-x-0 top-0 h-[0.5px] bg-slate-200/60 z-50 pointer-events-none"
+    ></div>
+    <div
+      class="fixed inset-y-0 left-12 w-[0.5px] bg-slate-100 pointer-events-none hidden md:block"
+    ></div>
+    <div
+      class="fixed inset-y-0 right-12 w-[0.5px] bg-slate-100 pointer-events-none hidden md:block"
+    ></div>
+
+    <!-- Interactive Canvas Container -->
+    <canvas
+      id="hero-canvas"
+      class="fixed top-0 left-0 w-full h-full pointer-events-none z-0 opacity-40"
+    ></canvas>
+
+    <!-- NAV BAR -->
+    <nav
+      class="fixed top-0 inset-x-0 bg-white/90 backdrop-blur-md z-40 border-b border-slate-100"
+    >
+      <div
+        class="max-w-7xl mx-auto px-6 md:px-12 h-20 flex items-center justify-between"
+      >
+        <div class="flex items-center gap-3">
+          <span class="font-bold tracking-tight text-lg text-slateDark"
+            >Maxim Veermeer</span
+          >
+          <span class="w-1.5 h-1.5 rounded-full bg-cobalt animate-pulse"></span>
+        </div>
+        <ul class="hidden md:flex items-center gap-10">
+          <li>
+            <a
+              href="#intro"
+              class="text-xs font-semibold tracking-[0.15em] uppercase text-slate-500 hover:text-cobalt transition-colors"
+              >01 / Intro</a
+            >
+          </li>
+          <li>
+            <a
+              href="#products"
+              class="text-xs font-semibold tracking-[0.15em] uppercase text-slate-500 hover:text-cobalt transition-colors"
+              >02 / Work</a
+            >
+          </li>
+          <li>
+            <a
+              href="#growth"
+              class="text-xs font-semibold tracking-[0.15em] uppercase text-slate-500 hover:text-cobalt transition-colors"
+              >03 / Growth</a
+            >
+          </li>
+          <li>
+            <a
+              href="#personality"
+              class="text-xs font-semibold tracking-[0.15em] uppercase text-slate-500 hover:text-cobalt transition-colors"
+              >04 / Mindset</a
+            >
+          </li>
+          <li>
+            <a
+              href="#eval"
+              class="text-xs font-semibold tracking-[0.15em] uppercase text-slate-500 hover:text-cobalt transition-colors"
+              >05 / Reflection</a
+            >
+          </li>
+        </ul>
+        <a
+          href="#products"
+          class="border border-cobalt hover:bg-cobalt hover:text-white text-cobalt text-xs font-semibold tracking-wider uppercase px-4 py-2 transition-all duration-300"
+        >
+          View Portfolio
+        </a>
+      </div>
+    </nav>
+
+    <!-- HERO -->
+    <section
+      class="relative min-h-screen flex flex-col justify-center px-6 md:px-24 pt-32 pb-16 z-10 max-w-7xl mx-auto"
+    >
+      <div class="reveal-element active space-y-6 md:space-y-8 max-w-4xl">
+        <span
+          class="hero-animate inline-block text-xs font-semibold tracking-[0.2em] uppercase text-cobalt bg-cobalt/5 px-3 py-1"
+          style="animation-delay: 0.1s"
+        >
+          IGM-3 · Final Internship Report · 2025–2026
+        </span>
+        <h1
+          class="hero-animate text-5xl sm:text-7xl md:text-[9rem] font-bold leading-[0.85] tracking-tighter text-slateDark select-none"
+          style="animation-delay: 0.25s"
+        >
+          MAXIM<br />
+         <span class="text-cobalt hero-float inline-block">
+  VEERMEER
+</span>
+          </span>
+        </h1>
+      </div>
+
+      <!-- Asymmetrical Grid of Metadata fields -->
+      <div class="hero-animate grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-12 mt-16 md:mt-24 border-t border-slate-100 pt-8"
+     style="animation-delay: 0.45s;">
+        <div class="space-y-1.5">
+          <span
+            class="text-[10px] font-semibold tracking-[0.25em] uppercase text-slate-400"
+            >Company</span
+          >
+          <p class="text-base font-bold text-slateDark">openthebox.be</p>
+        </div>
+        <div class="space-y-1.5">
+          <span
+            class="text-[10px] font-semibold tracking-[0.25em] uppercase text-slate-400"
+            >Sector</span
+          >
+          <p class="text-base font-bold text-slateDark">
+            AI Business Intelligence
+          </p>
+        </div>
+        <div class="space-y-1.5">
+          <span
+            class="text-[10px] font-semibold tracking-[0.25em] uppercase text-slate-400"
+            >Role</span
+          >
+          <p class="text-base font-bold text-slateDark">
+            Motion & Brand Designer
+          </p>
+        </div>
+        <div class="space-y-1.5">
+          <span
+            class="text-[10px] font-semibold tracking-[0.25em] uppercase text-slate-400"
+            >Duration</span
+          >
+          <p class="text-base font-bold text-slateDark">3 Months</p>
+        </div>
+      </div>
+
+      <div
+        class="absolute bottom-10 left-6 md:left-24 flex items-center gap-4 text-slate-400 text-xs tracking-widest uppercase"
+      >
+        <div class="w-12 h-[1px] bg-cobalt animate-[width_1.5s_ease-out]"></div>
+        <span>Scroll to explore</span>
+      </div>
+    </section>
+
+    <!-- TICKER / MARQUEE -->
+    <div
+      class="relative border-y border-slate-200 bg-slate-50 py-4 overflow-hidden z-10"
+    >
+      <div
+        class="flex whitespace-nowrap min-w-full animate-[ticker_40s_linear_infinite] flex-row gap-0"
+      >
+        <div
+          class="flex shrink-0 items-center gap-12 text-xs font-bold tracking-[0.25em] uppercase text-slate-400"
+        >
+          <span>After Effects</span><span class="text-cobalt">●</span>
+          <span>Motion Design</span><span class="text-cobalt">●</span>
+          <span>Brand Identity</span><span class="text-cobalt">●</span>
+          <span>UI Animation</span><span class="text-cobalt">●</span>
+          <span>Video Editing</span><span class="text-cobalt">●</span>
+          <span>Template Systems</span><span class="text-cobalt">●</span>
+          <span>B2B SaaS</span><span class="text-cobalt">●</span>
+          <span>Webinar Production</span><span class="text-cobalt">●</span>
+          <span>Social Content</span><span class="text-cobalt">●</span>
+          <span>Premiere Pro</span><span class="text-cobalt">●</span>
+        </div>
+        <!-- Duplicate for infinite effect -->
+        <div
+          class="flex shrink-0 items-center gap-12 text-xs font-bold tracking-[0.25em] uppercase text-slate-400 ml-12"
+        >
+          <span>After Effects</span><span class="text-cobalt">●</span>
+          <span>Motion Design</span><span class="text-cobalt">●</span>
+          <span>Brand Identity</span><span class="text-cobalt">●</span>
+          <span>UI Animation</span><span class="text-cobalt">●</span>
+          <span>Video Editing</span><span class="text-cobalt">●</span>
+          <span>Template Systems</span><span class="text-cobalt">●</span>
+          <span>B2B SaaS</span><span class="text-cobalt">●</span>
+          <span>Webinar Production</span><span class="text-cobalt">●</span>
+          <span>Social Content</span><span class="text-cobalt">●</span>
+          <span>Premiere Pro</span><span class="text-cobalt">●</span>
+        </div>
+      </div>
+    </div>
+
+    <style>
+      @keyframes ticker {
+        0% {
+          transform: translate3d(0, 0, 0);
+        }
+        100% {
+          transform: translate3d(-50%, 0, 0);
+        }
+      }
+    </style>
+
+    <!-- SECTION 1: INTRO -->
+    <section
+      class="relative py-24 md:py-36 px-6 md:px-12 max-w-7xl mx-auto z-10"
+      id="intro"
+    >
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-24">
+        <!-- Left Info column -->
+        <div class="lg:col-span-5 space-y-8 reveal-element">
+          <div class="space-y-3">
+            <span
+              class="text-xs font-bold tracking-[0.2em] text-cobalt uppercase"
+              >01 / Introduction</span
+            >
+            <!-- Avant-garde lowercase heading with wide character-tracking -->
+            <h2
+              class="text-3xl md:text-5xl font-bold tracking-[0.1em] lowercase text-slate-900"
+            >
+              sector, company<br />&amp;
+              <span class="text-cobalt font-extrabold">target audience</span>
+            </h2>
+          </div>
+
+          <!-- Interactive Table Block representing premium metadata -->
+          <div class="bg-white border border-slate-100 p-6 space-y-4 shadow-sm">
+            <div
+              class="flex justify-between items-center border-b border-slate-100 pb-3"
+            >
+              <span
+                class="text-[10px] font-semibold tracking-wider text-slate-400 uppercase"
+                >Company</span
+              >
+              <span class="text-xs font-bold text-slateDark"
+                >openthebox.be — Mediafin</span
+              >
+            </div>
+            <div
+              class="flex justify-between items-center border-b border-slate-100 pb-3"
+            >
+              <span
+                class="text-[10px] font-semibold tracking-wider text-slate-400 uppercase"
+                >Sector</span
+              >
+              <span class="text-xs font-bold text-slateDark">AI B2B SaaS</span>
+            </div>
+            <div
+              class="flex justify-between items-center border-b border-slate-100 pb-3"
+            >
+              <span
+                class="text-[10px] font-semibold tracking-wider text-slate-400 uppercase"
+                >Target audience</span
+              >
+              <span class="text-xs font-bold text-slateDark"
+                >PE / M&A / Banking</span
+              >
+            </div>
+            <div
+              class="flex justify-between items-center border-b border-slate-100 pb-3"
+            >
+              <span
+                class="text-[10px] font-semibold tracking-wider text-slate-400 uppercase"
+                >My role</span
+              >
+              <span class="text-xs font-bold text-slateDark"
+                >Motion & Brand Designer</span
+              >
+            </div>
+            <div
+              class="flex justify-between items-center border-b border-slate-100 pb-3"
+            >
+              <span
+                class="text-[10px] font-semibold tracking-wider text-slate-400 uppercase"
+                >Company data</span
+              >
+              <span class="text-xs font-bold text-slateDark"
+                >3M+ Belgian companies</span
+              >
+            </div>
+            <div
+              class="flex justify-between items-center border-b border-slate-100 pb-3"
+            >
+              <span
+                class="text-[10px] font-semibold tracking-wider text-slate-400 uppercase"
+                >Key learning</span
+              >
+              <span class="text-xs font-bold text-slateDark"
+                >Design for trust, not decoration</span
+              >
+            </div>
+            <div class="flex justify-between items-center">
+              <span
+                class="text-[10px] font-semibold tracking-wider text-slate-400 uppercase"
+                >Main tools</span
+              >
+              <span class="text-xs font-bold text-cobalt"
+                >AE · Premiere · Illustrator</span
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Copy column -->
+        <div class="lg:col-span-7 space-y-8 reveal-element">
+          <div
+            class="text-base md:text-lg text-slate-600 leading-relaxed space-y-6"
+          >
+            <p>
+              openthebox operates in the
+              <strong
+                class="text-slateDark font-semibold border-b border-cobalt/20"
+                >B2B SaaS sector</strong
+              >, providing an AI-powered business intelligence platform
+              aggregating data on over
+              <strong>3 million Belgian companies</strong>. Founded in 2017 by
+              Niek Bartholomeus and later acquired by media group
+              <strong>Mediafin</strong>, the platform centralises public
+              financial data — from the NBB, KBO, and De Tijd — into one fast,
+              visual dashboard enriched with AI insights.
+            </p>
+            <p>
+              Their audience is <strong>financial professionals</strong>:
+              investment analysts, private equity firms, M&A teams, and banks
+              who need fast, reliable company intelligence for high-stakes
+              decisions. Communicating to this audience means designing for
+              <strong>trust, clarity, and confidence</strong> — every visual
+              choice must serve the data, not distract from it.
+            </p>
+            <p>
+              Through three months here I learned what it means to build a
+              <strong>visual language for a data product</strong> — translating
+              complex financial intelligence into motion and video content that
+              feels intuitive, premium, and distinctly Belgian-tech.
+            </p>
+          </div>
+
+          <div class="pt-4">
+            <span
+              class="text-[10px] font-bold tracking-[0.2em] text-slate-400 uppercase block mb-4"
+              >Acquired Competences Matrix</span
+            >
+            <div class="flex flex-wrap gap-2">
+              <span
+                class="text-xs font-medium border border-slate-200 px-3 py-1.5 hover:border-cobalt hover:text-cobalt transition-colors duration-200"
+                >Motion Design</span
+              >
+              <span
+                class="text-xs font-medium border border-slate-200 px-3 py-1.5 hover:border-cobalt hover:text-cobalt transition-colors duration-200"
+                >After Effects</span
+              >
+              <span
+                class="text-xs font-medium border border-slate-200 px-3 py-1.5 hover:border-cobalt hover:text-cobalt transition-colors duration-200"
+                >Brand Identity</span
+              >
+              <span
+                class="text-xs font-medium border border-slate-200 px-3 py-1.5 hover:border-cobalt hover:text-cobalt transition-colors duration-200"
+                >Video Editing</span
+              >
+              <span
+                class="text-xs font-medium border border-slate-200 px-3 py-1.5 hover:border-cobalt hover:text-cobalt transition-colors duration-200"
+                >Social Media</span
+              >
+              <span
+                class="text-xs font-medium border border-slate-200 px-3 py-1.5 hover:border-cobalt hover:text-cobalt transition-colors duration-200"
+                >B2B Communication</span
+              >
+              <span
+                class="text-xs font-medium border border-slate-200 px-3 py-1.5 hover:border-cobalt hover:text-cobalt transition-colors duration-200"
+                >SaaS Visual Language</span
+              >
+              <span
+                class="text-xs font-medium border border-slate-200 px-3 py-1.5 hover:border-cobalt hover:text-cobalt transition-colors duration-200"
+                >Template Systems</span
+              >
+              <span
+                class="text-xs font-medium border border-slate-200 px-3 py-1.5 hover:border-cobalt hover:text-cobalt transition-colors duration-200"
+                >Premiere Pro</span
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="max-w-7xl mx-auto px-6 md:px-12">
+      <hr class="border-slate-100" />
+    </div>
+
+    <!-- SECTION 2: PRODUCTS -->
+    <section
+      class="relative py-24 md:py-36 px-6 md:px-12 max-w-7xl mx-auto z-10"
+      id="products"
+    >
+      <div class="space-y-4 mb-16">
+        <span class="text-xs font-bold tracking-[0.2em] text-cobalt uppercase">
+          02 / Tasks & Achievements
+        </span>
+
+        <h2
+          class="text-4xl md:text-6xl font-bold tracking-tight lowercase text-slate-900"
+        >
+          three
+          <span class="text-cobalt font-extrabold">#productoftheweek</span>
+          milestones
+        </h2>
+
+        <p
+          class="max-w-2xl text-slate-500 text-sm md:text-base leading-relaxed"
+        >
+          My main responsibility was building visual consistency into
+          openthebox's entire video identity — webinars, clips, product
+          informationals, static graphics, thumbnails, templates, and motion
+          sequences.
+        </p>
+      </div>
+
+      <div class="space-y-4">
+        <!-- PRODUCT 1 -->
+        <div
+          class="border border-slate-200 bg-white hover:border-cobalt transition-all duration-300 product-item rounded-xs overflow-hidden"
+          onclick="toggleProduct(this)"
+        >
+          <div
+            class="p-6 md:p-8 flex items-center justify-between cursor-pointer"
+          >
+            <div class="flex items-center gap-6 md:gap-8">
+              <span class="text-3xl font-extrabold text-slate-200">01</span>
+              <div>
+                <span
+                  class="text-[10px] font-bold tracking-widest text-cobalt uppercase block mb-1"
+                >
+                  Brand Identity & Template Systems
+                </span>
+                <h3 class="text-lg md:text-xl font-bold text-slateDark">
+                  Webinar Template System & Animated Intro
+                </h3>
+              </div>
+            </div>
+            <span class="product-chevron text-lg font-mono text-slate-400"
+              >↓</span
+            >
+          </div>
+
+          <div
+            class="product-body max-h-0 overflow-hidden transition-all duration-500 bg-slate-50/50"
+          >
+            <div
+              class="p-6 md:p-8 border-t border-slate-100 grid grid-cols-1 lg:grid-cols-2 gap-8"
+            >
+              <!-- TEXT (restored full) -->
+              <div class="space-y-4">
+                <div>
+                  <span
+                    class="text-[10px] font-bold tracking-[0.15em] text-slate-400 uppercase block mb-1"
+                  >
+                    Professional skill
+                  </span>
+                  <p class="text-sm text-slate-600">
+                    Brand Identity & Template Systems — designing reusable
+                    visual systems that scale across recurring content formats.
+                  </p>
+                </div>
+
+                <div>
+                  <span
+                    class="text-[10px] font-bold tracking-[0.15em] text-slate-400 uppercase block mb-1"
+                  >
+                    My input
+                  </span>
+                  <p class="text-sm text-slate-600">
+                    Translated openthebox's static brand identity into a motion
+                    language — typography, colour use, timing — and built
+                    modular After Effects compositions that the wider team can
+                    independently repurpose for each webinar episode.
+                  </p>
+                </div>
+
+                <div>
+                  <span
+                    class="text-[10px] font-bold tracking-[0.15em] text-slate-400 uppercase block mb-1"
+                  >
+                    What I learned
+                  </span>
+                  <p class="text-sm text-slate-600">
+                    Designing for reusability forces systems thinking over
+                    individual creativity. Every choice needs to work without
+                    you in the room.
+                  </p>
+                </div>
+
+                <div class="pt-2">
+                  <span
+                    class="inline-block text-xs font-bold text-cobalt bg-cobalt/5 border border-cobalt/20 px-3 py-1"
+                  >
+                    #productoftheweek
+                  </span>
+                </div>
+              </div>
+
+              <!-- VIDEO -->
+              <div
+                class="relative aspect-video bg-black overflow-hidden border border-slate-200"
+              >
+                <video
+                  class="w-full h-full object-cover"
+                  controls
+                  preload="metadata"
+                >
+                  <source src="Webinar intro.mp4" type="video/mp4" />
+                </video>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PRODUCT 2 -->
+        <div
+          class="border border-slate-200 bg-white hover:border-cobalt transition-all duration-300 product-item rounded-xs overflow-hidden"
+          onclick="toggleProduct(this)"
+        >
+          <div
+            class="p-6 md:p-8 flex items-center justify-between cursor-pointer"
+          >
+            <div class="flex items-center gap-6 md:gap-8">
+              <span class="text-3xl font-extrabold text-slate-200">02</span>
+              <div>
+                <span
+                  class="text-[10px] font-bold tracking-widest text-cobalt uppercase block mb-1"
+                >
+                  Motion Design & Storytelling
+                </span>
+                <h3 class="text-lg md:text-xl font-bold text-slateDark">
+                  Product Informational Videos
+                </h3>
+              </div>
+            </div>
+            <span class="product-chevron text-lg font-mono text-slate-400"
+              >↓</span
+            >
+          </div>
+
+          <div
+            class="product-body max-h-0 overflow-hidden transition-all duration-500 bg-slate-50/50"
+          >
+            <div
+              class="p-6 md:p-8 border-t border-slate-100 grid grid-cols-1 lg:grid-cols-2 gap-8"
+            >
+              <div class="space-y-4">
+                <div>
+                  <span
+                    class="text-[10px] font-bold tracking-[0.15em] text-slate-400 uppercase block mb-1"
+                  >
+                    Professional skill
+                  </span>
+                  <p class="text-sm text-slate-600">
+                    Motion Design & Visual Storytelling — communicating a
+                    product's value through animated graphics, pacing, and
+                    composition.
+                  </p>
+                </div>
+
+                <div>
+                  <span
+                    class="text-[10px] font-bold tracking-[0.15em] text-slate-400 uppercase block mb-1"
+                  >
+                    My input
+                  </span>
+                  <p class="text-sm text-slate-600">
+                    Full pipeline ownership: raw footage editing, After Effects
+                    motion overlays, animated text and data visualisations, and
+                    multi-format export for social channels. Close collaboration
+                    with the team to align visual pacing to messaging.
+                  </p>
+                </div>
+
+                <div>
+                  <span
+                    class="text-[10px] font-bold tracking-[0.15em] text-slate-400 uppercase block mb-1"
+                  >
+                    What I learned
+                  </span>
+                  <p class="text-sm text-slate-600">
+                    Timing is everything in informational video. The difference
+                    between confusing and clear is often one second of
+                    animation. I learned to think in rhythm, not just frames.
+                  </p>
+                </div>
+
+                <div class="pt-2">
+                  <span
+                    class="inline-block text-xs font-bold text-cobalt bg-cobalt/5 border border-cobalt/20 px-3 py-1"
+                  >
+                    #productoftheweek
+                  </span>
+                </div>
+              </div>
+
+              <div
+                class="relative aspect-video bg-black overflow-hidden border border-slate-200"
+              >
+                <video
+                  class="w-full h-full object-cover"
+                  controls
+                  preload="metadata"
+                >
+                  <source src="News Feature ShowcaseV2.mp4" type="video/mp4" />
+                </video>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PRODUCT 3 -->
+        <div
+          class="border border-slate-200 bg-white hover:border-cobalt transition-all duration-300 product-item rounded-xs overflow-hidden"
+          onclick="toggleProduct(this)"
+        >
+          <div
+            class="p-6 md:p-8 flex items-center justify-between cursor-pointer"
+          >
+            <div class="flex items-center gap-6 md:gap-8">
+              <span class="text-3xl font-extrabold text-slate-200">03</span>
+              <div>
+                <span
+                  class="text-[10px] font-bold tracking-widest text-cobalt uppercase block mb-1"
+                >
+                  Advanced Motion Design & UI Animation
+                </span>
+                <h3 class="text-lg md:text-xl font-bold text-slateDark">
+                  UI SaaS Informational Promo Video
+                </h3>
+              </div>
+            </div>
+            <span class="product-chevron text-lg font-mono text-slate-400"
+              >↓</span
+            >
+          </div>
+
+          <div
+            class="product-body max-h-0 overflow-hidden transition-all duration-500 bg-slate-50/50"
+          >
+            <div
+              class="p-6 md:p-8 border-t border-slate-100 grid grid-cols-1 lg:grid-cols-2 gap-8"
+            >
+              <div class="space-y-4">
+                <div>
+                  <span
+                    class="text-[10px] font-bold tracking-[0.15em] text-slate-400 uppercase block mb-1"
+                  >
+                    Professional skill
+                  </span>
+                  <p class="text-sm text-slate-600">
+                    Advanced Motion Design — building SaaS-style UI animation
+                    with dynamic type, animated product screens, and polished
+                    transitions entirely in After Effects.
+                  </p>
+                </div>
+
+                <div>
+                  <span
+                    class="text-[10px] font-bold tracking-[0.15em] text-slate-400 uppercase block mb-1"
+                  >
+                    My input
+                  </span>
+                  <p class="text-sm text-slate-600">
+                    Concept, storyboard, animation, and delivery across 20+ full
+                    iterations. I re-learnt and extended my After Effects skill
+                    set from scratch where needed, absorbing every round of
+                    feedback and maintaining creative vision across the full
+                    production cycle.
+                  </p>
+                </div>
+
+                <div>
+                  <span
+                    class="text-[10px] font-bold tracking-[0.15em] text-slate-400 uppercase block mb-1"
+                  >
+                    What I learned
+                  </span>
+                  <p class="text-sm text-slate-600">
+                    Version 20 can still be better than version 1. Professional
+                    motion design is about iteration and resilience — and the
+                    best outcomes often come after the hardest feedback.
+                  </p>
+                </div>
+
+                <div class="pt-2">
+                  <span
+                    class="inline-block text-xs font-bold text-cobalt bg-cobalt/5 border border-cobalt/20 px-3 py-1"
+                  >
+                    #productoftheweek
+                  </span>
+                </div>
+              </div>
+
+              <div
+                class="relative aspect-video bg-black overflow-hidden border border-slate-200"
+              >
+                <video
+                  class="w-full h-full object-cover"
+                  controls
+                  preload="metadata"
+                >
+                  <source
+                    src="Openthebox - Explainer Video - Product Led.mp4 V2.mp4"
+                    type="video/mp4"
+                  />
+                </video>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="max-w-7xl mx-auto px-6 md:px-12">
+      <hr class="border-slate-100" />
+    </div>
+
+    <!-- SECTION 3: PERSONAL DEVELOPMENT -->
+    <section
+      class="relative py-24 md:py-36 px-6 md:px-12 max-w-7xl mx-auto z-10"
+      id="growth"
+    >
+      <div class="space-y-4 mb-16">
+        <span class="text-xs font-bold tracking-[0.2em] text-cobalt uppercase"
+          >03 / Personal Development</span
+        >
+        <!-- Avant-garde lowercase heading -->
+        <h2
+          class="text-4xl md:text-6xl font-bold tracking-tight lowercase text-slate-900"
+        >
+          two moments
+          <span class="text-cobalt font-extrabold">#proudofmyself</span>
+        </h2>
+      </div>
+
+      <div class="space-y-16">
+        <!-- STARR BLOCK 1 -->
+        <div
+          class="border border-slate-200 bg-white p-6 md:p-12 space-y-8 reveal-element"
+        >
+          <div
+            class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 pb-6"
+          >
+            <h3 class="text-xl md:text-2xl font-bold text-slateDark">
+              Pushing through 20+ iterations on the UI promo video
+            </h3>
+            <span
+              class="text-xs font-bold text-cobalt bg-cobalt/5 border border-cobalt/10 px-3 py-1"
+              >#proudofmyself</span
+            >
+          </div>
+
+          <!-- Micro-architectural grid layout in style of indigo-laboratory.it -->
+          <div class="grid grid-cols-1 md:grid-cols-5 gap-6 md:gap-4">
+            <div class="space-y-2 border-r border-slate-100 pr-4">
+              <span class="text-2xl font-extrabold text-cobalt">S</span>
+              <div
+                class="text-[10px] font-bold tracking-widest uppercase text-slate-400"
+              >
+                Situation
+              </div>
+              <p class="text-xs text-slate-600 leading-relaxed">
+                I was tasked with creating a flagship SaaS-style promo video — a
+                format I had never made professionally. Expectations were high
+                and the visual bar set by top-tier SaaS brands is demanding.
+              </p>
+            </div>
+            <div class="space-y-2 border-r border-slate-100 px-4">
+              <span class="text-2xl font-extrabold text-cobalt">T</span>
+              <div
+                class="text-[10px] font-bold tracking-widest uppercase text-slate-400"
+              >
+                Task
+              </div>
+              <p class="text-xs text-slate-600 leading-relaxed">
+                Deliver a polished After Effects motion video that authentically
+                represents the openthebox brand — independently, from concept to
+                final export.
+              </p>
+            </div>
+            <div class="space-y-2 border-r border-slate-100 px-4">
+              <span class="text-2xl font-extrabold text-cobalt">A</span>
+              <div
+                class="text-[10px] font-bold tracking-widest uppercase text-slate-400"
+              >
+                Action
+              </div>
+              <p class="text-xs text-slate-600 leading-relaxed">
+                Phased the project: research, storyboard, animation tests,
+                feedback cycles. When feedback required rebuilding entire
+                scenes, I treated each version as fresh opportunity rather than
+                failure. Taught myself techniques and pushed through 20+ full
+                revisions.
+              </p>
+            </div>
+            <div class="space-y-2 border-r border-slate-100 px-4">
+              <span class="text-2xl font-extrabold text-cobalt">R</span>
+              <div
+                class="text-[10px] font-bold tracking-widest uppercase text-slate-400"
+              >
+                Result
+              </div>
+              <p class="text-xs text-slate-600 leading-relaxed">
+                The video was approved and delivered as a flagship company
+                asset. Quality matched ambition. The team responded positively
+                to both the process and the outcome.
+              </p>
+            </div>
+            <div class="space-y-2 pl-4">
+              <span class="text-2xl font-extrabold text-cobalt">R</span>
+              <div
+                class="text-[10px] font-bold tracking-widest uppercase text-slate-400"
+              >
+                Reflection
+              </div>
+              <p class="text-xs text-slate-600 leading-relaxed">
+                Resilience is a creative skill. I now know I can handle
+                long-form, high-expectation projects without losing motivation —
+                something I wasn't certain of before this internship.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- STARR BLOCK 2 -->
+        <div
+          class="border border-slate-200 bg-white p-6 md:p-12 space-y-8 reveal-element"
+        >
+          <div
+            class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 pb-6"
+          >
+            <h3 class="text-xl md:text-2xl font-bold text-slateDark">
+              Learning to stand behind my own creative choices
+            </h3>
+            <span
+              class="text-xs font-bold text-cobalt bg-cobalt/5 border border-cobalt/10 px-3 py-1"
+              >#proudofmyself</span
+            >
+          </div>
+
+          <!-- Micro-architectural grid layout -->
+          <div class="grid grid-cols-1 md:grid-cols-5 gap-6 md:gap-4">
+            <div class="space-y-2 border-r border-slate-100 pr-4">
+              <span class="text-2xl font-extrabold text-cobalt">S</span>
+              <div
+                class="text-[10px] font-bold tracking-widest uppercase text-slate-400"
+              >
+                Situation
+              </div>
+              <p class="text-xs text-slate-600 leading-relaxed">
+                I've always struggled with confidence in creative decisions —
+                doubting my choices in feedback and changing things
+                unnecessarily. Entering an unfamiliar market (motion design for
+                B2B SaaS) intensified this.
+              </p>
+            </div>
+            <div class="space-y-2 border-r border-slate-100 px-4">
+              <span class="text-2xl font-extrabold text-cobalt">T</span>
+              <div
+                class="text-[10px] font-bold tracking-widest uppercase text-slate-400"
+              >
+                Task
+              </div>
+              <p class="text-xs text-slate-600 leading-relaxed">
+                Produce professional work in an unfamiliar domain, make
+                deliberate design decisions, and be able to explain and defend
+                them to the team.
+              </p>
+            </div>
+            <div class="space-y-2 border-r border-slate-100 px-4">
+              <span class="text-2xl font-extrabold text-cobalt">A</span>
+              <div
+                class="text-[10px] font-bold tracking-widest uppercase text-slate-400"
+              >
+                Action
+              </div>
+              <p class="text-xs text-slate-600 leading-relaxed">
+                Started documenting reasoning behind every choice — why a
+                certain timing, why this colour, why this layout. Having
+                articulated reasons made me confident when presenting. Learned
+                to distinguish useful critique from personal preference and to
+                push back constructively.
+              </p>
+            </div>
+            <div class="space-y-2 border-r border-slate-100 px-4">
+              <span class="text-2xl font-extrabold text-cobalt">R</span>
+              <div
+                class="text-[10px] font-bold tracking-widest uppercase text-slate-400"
+              >
+                Result
+              </div>
+              <p class="text-xs text-slate-600 leading-relaxed">
+                Multiple choices I stood behind were kept in the final
+                deliverables. The team respected my reasoning. Confidence in
+                presenting work grew noticeably over three months.
+              </p>
+            </div>
+            <div class="space-y-2 pl-4">
+              <span class="text-2xl font-extrabold text-cobalt">R</span>
+              <div
+                class="text-[10px] font-bold tracking-widest uppercase text-slate-400"
+              >
+                Reflection
+              </div>
+              <p class="text-xs text-slate-600 leading-relaxed">
+                Standing behind your work is not arrogance — it's
+                professionalism. I now bring structured reasoning to every
+                creative decision. One of the most personal and lasting lessons
+                of this internship.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="max-w-7xl mx-auto px-6 md:px-12">
+      <hr class="border-slate-100" />
+    </div>
+
+    <!-- SECTION 4: PERSONALITY -->
+    <section
+      class="relative py-24 md:py-36 px-6 md:px-12 max-w-7xl mx-auto z-10"
+      id="personality"
+    >
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-24">
+        <div class="lg:col-span-7 space-y-8 reveal-element">
+          <div class="space-y-3">
+            <span
+              class="text-xs font-bold tracking-[0.2em] text-cobalt uppercase"
+              >04 / Personality Profile</span
+            >
+            <!-- Avant-garde lowercase heading with wide character-tracking -->
+            <h2
+              class="text-3xl md:text-5xl font-bold tracking-[0.1em] lowercase text-slate-900"
+            >
+              the mediator
+              <span class="text-cobalt font-extrabold">infp-t</span>
+            </h2>
+          </div>
+
+          <div class="text-slate-600 space-y-6 leading-relaxed">
+            <p class="text-base md:text-lg">
+              My 16Personalities result — the Mediator (INFP-T) — describes
+              someone deeply creative, idealistic, and motivated by meaningful
+              work. Mediators are guided by strong personal values and connect
+              deeply with the things they make.
+            </p>
+            <blockquote
+              class="border-l-4 border-cobalt bg-slate-50 pl-6 py-4 italic text-slate-700 font-medium"
+            >
+              "Mediators are imaginative idealists, guided by their own core
+              values and beliefs — possibilities are paramount; the world as it
+              should be matters more than the world as it is."
+            </blockquote>
+            <p>
+              I recognise myself strongly in this. The creative freedom
+              openthebox gave me was exactly the environment where an INFP
+              thrives — and the Turbulent aspect maps directly to my
+              #proudofmyself moment about confidence and self-doubt.
+            </p>
+          </div>
+
+          <!-- Interactive Progress Bars with neon cobalt styling -->
+          <div class="space-y-4 pt-4" id="trait-rows">
+            <div class="space-y-1">
+              <div class="flex justify-between text-xs font-bold uppercase">
+                <span>Introversion</span>
+                <span class="text-cobalt">72%</span>
+              </div>
+              <div class="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+                <div
+                  class="trait-fill h-full bg-cobalt rounded-full transition-all duration-1000"
+                  style="width: 0%"
+                  data-w="72"
+                ></div>
+              </div>
+            </div>
+            <div class="space-y-1">
+              <div class="flex justify-between text-xs font-bold uppercase">
+                <span>Intuition</span>
+                <span class="text-cobalt">81%</span>
+              </div>
+              <div class="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+                <div
+                  class="trait-fill h-full bg-cobalt rounded-full transition-all duration-1000"
+                  style="width: 0%"
+                  data-w="81"
+                ></div>
+              </div>
+            </div>
+            <div class="space-y-1">
+              <div class="flex justify-between text-xs font-bold uppercase">
+                <span>Feeling</span>
+                <span class="text-cobalt">79%</span>
+              </div>
+              <div class="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+                <div
+                  class="trait-fill h-full bg-cobalt rounded-full transition-all duration-1000"
+                  style="width: 0%"
+                  data-w="79"
+                ></div>
+              </div>
+            </div>
+            <div class="space-y-1">
+              <div class="flex justify-between text-xs font-bold uppercase">
+                <span>Perceiving</span>
+                <span class="text-cobalt">63%</span>
+              </div>
+              <div class="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+                <div
+                  class="trait-fill h-full bg-cobalt rounded-full transition-all duration-1000"
+                  style="width: 0%"
+                  data-w="63"
+                ></div>
+              </div>
+            </div>
+            <div class="space-y-1">
+              <div class="flex justify-between text-xs font-bold uppercase">
+                <span>Turbulent</span>
+                <span class="text-cobalt">68%</span>
+              </div>
+              <div class="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+                <div
+                  class="trait-fill h-full bg-cobalt rounded-full transition-all duration-1000"
+                  style="width: 0%"
+                  data-w="68"
+                ></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right block: Large graphic identity card in pure white blocks theme -->
+        <div class="lg:col-span-5 space-y-6 reveal-element">
+          <div
+            class="bg-slate-900 text-white p-12 text-center flex flex-col justify-center items-center rounded-xs space-y-4 shadow-xl"
+          >
+            <span
+              class="text-xs font-bold tracking-[0.3em] uppercase text-cobalt"
+              >Type Identification</span
+            >
+            <h3 class="text-7xl font-extrabold tracking-tight">INFP</h3>
+            <p class="text-lg font-medium text-slate-300">The Mediator</p>
+            <p class="text-xs text-slate-400 max-w-xs leading-relaxed">
+              Creative, idealistic, values-driven. Thrives with creative freedom
+              and meaningful work.
+            </p>
+          </div>
+
+          <div
+            class="bg-white border border-slate-200 p-6 md:p-8 space-y-4 shadow-sm"
+          >
+            <h4 class="text-xs font-bold tracking-widest text-cobalt uppercase">
+              How this showed up at openthebox
+            </h4>
+            <ul class="space-y-3 text-xs md:text-sm text-slate-600">
+              <li class="flex gap-3">
+                <span class="text-cobalt font-bold">→</span>
+                <span
+                  >Deep personal investment in the UI promo video — it had to be
+                  right, not just done</span
+                >
+              </li>
+              <li class="flex gap-3">
+                <span class="text-cobalt font-bold">→</span>
+                <span
+                  >Strong response to meaningful feedback; struggled with vague
+                  direction early on</span
+                >
+              </li>
+              <li class="flex gap-3">
+                <span class="text-cobalt font-bold">→</span>
+                <span
+                  >Initial self-doubt overcome through structured reasoning and
+                  documentation</span
+                >
+              </li>
+              <li class="flex gap-3">
+                <span class="text-cobalt font-bold">→</span>
+                <span
+                  >Genuine connection with the team — the people made the
+                  experience what it was</span
+                >
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="max-w-7xl mx-auto px-6 md:px-12">
+      <hr class="border-slate-100" />
+    </div>
+
+    <!-- SECTION 5: EVALUATION -->
+    <section
+      class="relative py-24 md:py-36 px-6 md:px-12 max-w-7xl mx-auto z-10"
+      id="eval"
+    >
+      <div class="space-y-4 mb-16">
+        <span class="text-xs font-bold tracking-[0.2em] text-cobalt uppercase"
+          >05 / Critical Reflection</span
+        >
+        <!-- Avant-garde lowercase heading -->
+        <h2
+          class="text-4xl md:text-6xl font-bold tracking-tight lowercase text-slate-900"
+        >
+          internship &amp;
+          <span class="text-cobalt font-extrabold">programme</span> evaluation
+        </h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
+        <!-- Positives block -->
+        <div
+          class="bg-white border border-slate-200 p-6 md:p-10 space-y-6 reveal-element shadow-sm"
+        >
+          <div class="flex items-center gap-3 border-b border-slate-100 pb-4">
+            <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
+            <h3 class="text-lg font-bold text-slateDark">Three Positives</h3>
+          </div>
+          <div class="space-y-4">
+            <div class="p-4 bg-slate-50 border-l-2 border-cobalt">
+              <p class="text-sm text-slate-600">
+                <strong>Creative freedom.</strong> openthebox trusted me with
+                genuine ownership over the visual direction of their content.
+                Rare for an intern — it pushed my skills further than a
+                constrained role ever could.
+              </p>
+            </div>
+            <div class="p-4 bg-slate-50 border-l-2 border-cobalt">
+              <p class="text-sm text-slate-600">
+                <strong>Exceptional team culture.</strong> The people made it a
+                genuinely enjoyable, stimulating environment. A positive team
+                directly affects creative output — I felt supported, not just
+                managed.
+              </p>
+            </div>
+            <div class="p-4 bg-slate-50 border-l-2 border-cobalt">
+              <p class="text-sm text-slate-600">
+                <strong>Entry into dynamic design.</strong> First real
+                professional exposure to motion design as a discipline.
+                Exploring something genuinely unknown is something I'll carry
+                into my career.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Improvements block -->
+        <div
+          class="bg-white border border-slate-200 p-6 md:p-10 space-y-6 reveal-element shadow-sm"
+        >
+          <div class="flex items-center gap-3 border-b border-slate-100 pb-4">
+            <span class="w-3 h-3 rounded-full bg-cobalt"></span>
+            <h3 class="text-lg font-bold text-slateDark">Three Improvements</h3>
+          </div>
+          <div class="space-y-4">
+            <div class="p-4 bg-slate-50 border-l-2 border-slate-300">
+              <p class="text-sm text-slate-600">
+                <strong>Limited learning curve.</strong> As the primary designer
+                on many projects, there weren't more experienced motion
+                designers to learn from directly. Self-teaching is valuable, but
+                mentorship accelerates growth in ways solo work cannot.
+              </p>
+            </div>
+            <div class="p-4 bg-slate-50 border-l-2 border-slate-300">
+              <p class="text-sm text-slate-600">
+                <strong>Inconsistent feedback on design.</strong> Feedback
+                cycles were sometimes sparse or delayed. Without regular
+                direction it was harder to calibrate early — especially in the
+                first weeks.
+              </p>
+            </div>
+            <div class="p-4 bg-slate-50 border-l-2 border-slate-300">
+              <p class="text-sm text-slate-600">
+                <strong>Small design team.</strong> Limited exposure to
+                collaborative design processes — peer iteration, design reviews,
+                cross-functional sessions. These are experiences to seek out in
+                future roles.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="max-w-7xl mx-auto px-6 md:px-12">
+      <hr class="border-slate-100" />
+    </div>
+
+      <!-- IGM Curriculum Connection block -->
+      <div
+        class="bg-slate-900 text-white p-8 md:p-12 mt-12 rounded-xs space-y-4 reveal-element shadow-xl"
+      >
+        <span
+          class="text-xs font-bold tracking-[0.2em] text-cobalt uppercase block"
+          >IGM Programme ↔ Professional Practice</span
+        >
+        <p
+          class="text-sm md:text-base text-slate-300 leading-relaxed max-w-4xl"
+        >
+          The IGM programme gave me a strong grounding in visual principles,
+          layout, typography, and design thinking — all directly applicable from
+          day one. The gap was most visible in
+          <strong class="text-white font-semibold"
+            >motion design and video production</strong
+          >: the programme covers these lightly, but professional standard
+          demands deep technical mastery of After Effects. The biggest added
+          value of this internship was precisely this — three months of applied,
+          high-stakes practice in a specialism no classroom alone could have
+          given me.
+        </p>
+      </div>
+    </section>
+
+    <!-- FINAL SUMMARY -->
+<section
+  class="relative py-24 md:py-36 px-6 md:px-12 max-w-7xl mx-auto z-10"
+  id="final"
+>
+  <div class="space-y-10 reveal-element">
+
+    <div class="space-y-3">
+      <span class="text-xs font-bold tracking-[0.2em] text-cobalt uppercase">
+        06 / Final Summary
+      </span>
+
+      <h2 class="text-4xl md:text-6xl font-bold tracking-tight text-slate-900">
+        closing
+        <span class="text-cobalt font-extrabold">reflection</span>
+      </h2>
+    </div>
+
+    <div class="bg-white border border-slate-200 p-8 md:p-12 space-y-8 shadow-sm">
+
+      <div class="space-y-4 text-slate-600 leading-relaxed text-sm md:text-base">
+        <p>
+          This internship at openthebox (IGM-3) was a three-month deep dive into
+          motion design within a B2B SaaS environment, where I worked on video content,
+          UI animation, and reusable visual systems.
+        </p>
+
+        <p>
+          The most important shift in my thinking was moving from designing isolated visuals
+          to designing <strong class="text-slate-900">systems that scale across formats</strong>.
+          Every project required consistency, clarity, and trust-driven communication.
+        </p>
+
+        <p>
+          On a personal level, I learned how to work through iteration-heavy creative processes,
+          handle feedback professionally, and make design decisions with confidence and reasoning
+          instead of hesitation.
+        </p>
+
+        <p>
+          This experience confirmed my interest in motion design and strengthened my ability
+          to operate in real production environments where speed, clarity, and precision matter.
+        </p>
+      </div>
+
+    </div>
+
+    <div class="flex justify-between items-center text-xs text-slate-400 pt-4">
+      <span>Maxim Veermeer · IGM-3</span>
+      <span class="text-cobalt font-semibold">END OF REPORT</span>
+    </div>
+
+  </div>
+</section>
+
+    <!-- FOOTER -->
+    <footer
+      class="border-t border-slate-200 bg-slate-50 py-12 px-6 md:px-12 z-10 relative"
+    >
+      <div
+        class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6"
+      >
+        <p class="text-xs text-slate-400">
+          Maxim Veermeer · IGM-3 · Final Internship Report 2025–2026
+        </p>
+        <p class="text-xs text-slate-400">
+          Internship at
+          <a
+            href="https://openthebox.be"
+            target="_blank"
+            class="text-cobalt font-bold hover:underline"
+            >openthebox.be</a
+          >
+          · Motion &amp; Brand Design
+        </p>
+      </div>
+
+      
+    </footer>
+
+    <script>
+      /*  THREE.JS BACKGROUND — pristine vector nodes styled to look like high-end indigo-laboratory.it layout */
+
+      /* PRODUCT ACCORDION FUNCTIONALITY */
+      function toggleProduct(el) {
+        const wasOpen = el.classList.contains("open");
+        document.querySelectorAll(".product-item").forEach((item) => {
+          item.classList.remove("open");
+          const body = item.querySelector(".product-body");
+          body.style.maxHeight = "0px";
+          item.querySelector(".product-chevron").style.transform =
+            "rotate(0deg)";
+        });
+
+        if (!wasOpen) {
+          el.classList.add("open");
+          const body = el.querySelector(".product-body");
+          body.style.maxHeight = "1000px";
+          el.querySelector(".product-chevron").style.transform =
+            "rotate(180deg)";
+        }
+      }
+
+      /* SCROLL REVEAL TRIGGERS */
+      const revealElements = document.querySelectorAll(".reveal-element");
+      const observerOptions = {
+        threshold: 0.1,
+        rootMargin: "0px 0px -50px 0px",
+      };
+      const revealObserver = new IntersectionObserver((entries, obs) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("active");
+            obs.unobserve(entry.target);
+          }
+        });
+      }, observerOptions);
+      revealElements.forEach((el) => revealObserver.observe(el));
+
+      /* TRAIT BARS SCROLL TRIGGER */
+      let barsAnimated = false;
+      const personalitySection = document.getElementById("personality");
+      const personalityObserver = new IntersectionObserver(
+        (entries) => {
+          if (entries[0].isIntersecting && !barsAnimated) {
+            barsAnimated = true;
+            document.querySelectorAll(".trait-fill").forEach((fill) => {
+              fill.style.width = fill.getAttribute("data-w") + "%";
+            });
+          }
+        },
+        { threshold: 0.15 },
+      );
+      personalityObserver.observe(personalitySection);
+    </script>
+  </body>
+</html>
