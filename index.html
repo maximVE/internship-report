@@ -1473,25 +1473,27 @@
   const supabaseKey = "sb_publishable_Vjkho7-E5AEUYmRNceN_eg_dnH_1m0n";
 
   const client = window.supabase.createClient(supabaseUrl, supabaseKey);
-
-async function login() {
+  async function login() {
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
+  const error = document.getElementById("error");
 
-  const { data, error } = await client.auth.signUp({
+  const { data, error: err } = await client.auth.signInWithPassword({
     email,
     password
   });
 
-  console.log(data, error);
-
-  if (error) {
-    console.log("Signup failed:", error.message);
+  if (err) {
+    console.log(err.message);
+    error.classList.remove("hidden");
+    error.textContent = err.message;
     return;
   }
 
+  // success → hide login screen
   document.getElementById("auth").style.display = "none";
 }
+
       window.login = login;
 
     </script>
